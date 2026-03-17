@@ -1,0 +1,254 @@
+services:
+
+  ## >>  GLUEUN - VPN proxie
+
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      - VPN_SERVICE_PROVIDER=protonvpn
+      - VPN_TYPE=wireguard
+      - SERVER_COUNTRIES=Canada
+      - DOT=off
+      - DNS_ADDRESS=1.1.1.1
+      - BLOCK_MALICIOUS=off
+      - BLOCK_SURVEILLANCE=off
+      - HEALTH_VPN_DURATION_INITIAL=60s
+    env_file:
+      - ./config/gluetun/.env
+    ports:
+      - 8085:8085  # qBittorrent WebUI
+    volumes:
+      - ~/data/gluetun:/gluetun
+    restart: unless-stopped
+
+  ## >> SOULSEEK - P2P Network
+
+  slskd:
+    container_name: slskd
+    image: slskd/slskd:latest
+    ports:
+      #- "5030:5030"    # Web UI
+      - "50300:50300"  # Soulseek P2P port
+    volumes:
+      - ~/data/slskd/config:/app
+      - ~/data/media/music/soulseek:/downloads
+      - ~/data/media/music/library:/library
+    env_file:
+    - ./config/slskd/.env
+    restart: unless-stopped
+
+  ## >> Navidrome - Frontent (API and UI)
+
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    user: 1000:1000
+    environment:
+      - ND_LOGLEVEL=info
+      - ND_SESSIONTIMEOUT=24h
+      - ND_LISTENBRAINZ_ENABLE=true
+    #ports:
+    #  - 4533:4533
+    volumes:
+      - ~/data/navidrome:/data
+      #- ~/data/media/music:/music:ro
+      # Only show Processed music
+      - ~/data/media/music/library:/music/processed
+      - ~/data/slskd/config/downloads:/music/unprocessed
+    restart: unless-stopped
+
+  ## >> Open WebUI (ai stuff)
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: unless-stopped
+    environment:
+      - ENABLE_OLLAMA_API=false
+      - OPENAI_API_BASE_URL=https://api.synthetic.new/openai/v1
+      - ENABLE_RAG_WEB_SEARCH=True
+      - RAG_WEB_SEARCH_ENGINE=searxng
+      - SEARXNG_QUERY_URL=http://searxng:8080/search?q=<query>
+      - ENABLE_SIGNUP=true
+    env_file:
+      - ./config/open-webui/.env
+    volumes:
+      - ~/data/open-webui:/app/backend/data
+
+  ## Searxng - Privacy focused search engine aggregating popular engines
+
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng
+    volumes:
+      - ./config/searxng:/etc/searxng:rw
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+      - DAC_OVERRIDE
+    env_file:
+      - ./config/searxng/.env
+
+  ## >> Grafana Alloy - Scraping to grafana instance
+
+  alloy:
+    image: grafana/alloy:latest
+    container_name: alloy
+    restart: unless-stopped
+    pid: host
+    privileged: true
+    command: run --server.http.listen-addr=0.0.0.0:12345 /etc/alloy/config.alloy
+    env_file:
+    - ./config/alloy/.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config/alloy/config.alloy:/etc/alloy/config.alloy
+      # cadvisor mounts
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+
+  ## >> Caddy - Simple Reverse proxy
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 8443:443
+      - 8000:8000
+      - 8001:8001
+      - 8002:8002
+      - 8003:8003
+      - 8004:8004
+      - 8005:8005
+    volumes:
+      - ~/data/stack/config/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ~/data/stack/config/caddy/index.html:/src/www/landing/index.html
+      - ~/data/caddy/data:/data     # Not sure what these are for
+      - ~/data/caddy/config:/config #
+      # Need this to get the certs from tailscale (Maybe we can just mount the sock?)
+      - /var/run/tailscale:/var/run/tailscale
+
+  ## >> Beets - Manages music library. (meta data correction, deduplication, lyrics, artwork, etc)
+
+  beets:
+    image: lscr.io/linuxserver/beets:latest
+    container_name: beets
+    restart: unless-stopped
+    # internal port is 8337
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ~/data/beets/config:/config
+      - ~/data/stack/beets/config.yaml:/config/config.yaml:ro
+      # Incoming downloaded stuff (need to run beets import on this stuff)
+      - ~/data/media/music/soulseek:/downloads
+      # Processed music
+      - ~/data/media/music/library:/music
+
+  # Tried playing around with using bittorrent #
+
+  ### >> Syncify - Syncs spotify
+
+  #syncify:
+  #  image: thewicklowwolf/syncify:latest
+  #  container_name: syncify
+  #  volumes:
+  #    - ~/data/syncify/config:/syncify/config
+  #    - ~/data/media/music/singles:/syncify/downloads
+  #    - ~/etc/localtime:/etc/localtime:ro
+  #  ports:
+  #    - 5001:5000
+  #  restart: unless-stopped
+
+  ## >> Lidify - ...
+
+  #lidify:
+  #  image: thewicklowwolf/lidify:latest
+  #  container_name: lidify
+  #  volumes:
+  #    - ~/data/lidify/config:/lidify/config
+  #    - /etc/localtime:/etc/localtime:ro
+  #  ports:
+  #    - 5002:5000
+  #  restart: unless-stopped
+
+
+  ## >> Flaresolverr - Proxy to get around torrent bot restrictions
+
+  #flaresolverr:
+  #  image: ghcr.io/flaresolverr/flaresolverr:latest
+  #  container_name: flaresolverr
+  #  environment:
+  #    - LOG_LEVEL=info
+  #    - LOG_HTML=false
+  #    - CAPTCHA_SOLVER=none
+  #    - TZ=America/Montreal
+  #  ports:
+  #    - 8191:8191
+  #  restart: unless-stopped
+
+  ## >> QBitTorrent - Download manager for torrents
+
+  #qbittorrent:
+  #  image: lscr.io/linuxserver/qbittorrent:latest
+  #  container_name: qbittorrent
+  #  network_mode: "service:gluetun"
+  #  environment:
+  #    - PUID=1000
+  #    - PGID=1000
+  #    - TZ=America/Montreal
+  #    - WEBUI_PORT=8085
+  #  volumes:
+  #    - ~/data/qbittorrent/config:/config
+  #    - ~/data/torrents:/data/torrents
+  #  restart: unless-stopped
+  #  depends_on:
+  #    - gluetun
+
+  ## >> Prowlarr - Index Manager - Handles torrent / usenet index and connection
+
+  #prowlarr:
+  #  image: lscr.io/linuxserver/prowlarr:latest
+  #  container_name: prowlarr
+  #  environment:
+  #    - PUID=1000
+  #    - PGID=1000
+  #    - TZ=America/Montreal
+  #  volumes:
+  #    - ~/data/prowlarr/config:/config
+  #  ports:
+  #    - 9696:9696
+  #  restart: unless-stopped
+
+  # >> LIDARR -
+
+  #lidarr:
+  #  image: lscr.io/linuxserver/lidarr:latest
+  #  container_name: lidarr
+  #  environment:
+  #    - PUID=1000
+  #    - PGID=1000
+  #    - TZ=America/Montreal
+  #  volumes:
+  #    - ~/data/lidarr/config:/config
+  #    - ~/data:/data
+  #  #ports:
+  #  #  - 8686:8686
+  #  restart: unless-stopped
+

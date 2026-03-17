@@ -1,0 +1,40 @@
+# HTTP redirect to https landing page
+http://homelab {
+    redir https://homelab.humpback-halosaur.ts.net:8443 permanent
+}
+
+
+# These port numbers are internal to the caddy docker container
+# So this should NOT be 8443 we eventually want the docker container
+# to expose 443 but this is fine for now.
+# Tailscale is currently using 443 on the host.
+homelab.humpback-halosaur.ts.net:443 {
+    root * /src/www/landing
+    file_server
+}
+
+## SERVICES
+
+homelab.humpback-halosaur.ts.net:8000 {
+    reverse_proxy open-webui:8080
+}
+
+homelab.humpback-halosaur.ts.net:8001 {
+    reverse_proxy slskd:5030
+}
+
+homelab.humpback-halosaur.ts.net:8002 {
+    reverse_proxy navidrome:4533
+}
+
+homelab.humpback-halosaur.ts.net:8003 {
+    reverse_proxy searxng:8080
+}
+
+#homelab.humpback-halosaur.ts.net:8004 {
+#    reverse_proxy lidarr:8686
+#}
+
+#homelab.humpback-halosaur.ts.net:8005 {
+#    reverse_proxy alloy:12345
+#}

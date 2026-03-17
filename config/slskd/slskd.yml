@@ -1,0 +1,115 @@
+---
+# Soulseek Configuration for Music Downloads
+
+# Web UI Configuration
+web:
+  # Port for web interface (already exposed in docker-compose)
+  port: 5030
+
+  # Authentication (CHANGE THESE!)
+  authentication:
+    username: ""
+    password: ""
+
+  # HTTPS (optional - disable for local use)
+  https:
+    enabled: false
+
+  #url_base: /slskd
+
+# Soulseek Network Settings
+soulseek:
+  # Your Soulseek username (CHANGE THIS!)
+  username: ""
+
+  # Your Soulseek password (CHANGE THIS!)
+  password: ""
+
+  # Description shown to other users
+  description: "New music lover looking forward to some new music."
+
+  # Listen port for incoming connections
+  listen_port: 50300
+
+  # Distributed network (helps with searches)
+  distributed_network:
+    enabled: true
+    child_limit: 25
+
+
+
+# Download Settings
+downloads:
+  # Where downloads go (matches docker volume mount)
+  directory: /downloads
+
+  # Organize by username
+  create_user_subdirectories: true
+
+  # Organize by complete/incomplete
+  incomplete_directory: /downloads/incomplete
+
+  # Maximum simultaneous downloads
+  max_concurrent_downloads: 2
+
+  # Slots per user
+  slots_per_user: 2
+
+  # Speed limits (0 = unlimited)
+  speed_limit: 0
+
+# Upload/Sharing Settings (IMPORTANT!)
+shares:
+  # Share your music so you can download
+  # This shares your Soulseek downloads folder
+  directories:
+    - /downloads
+
+  # Filters - what NOT to share
+  filters: []
+
+  # Upload slots
+  upload_slots: 2
+
+  # Queue size
+  queue_size: 50
+
+# Search Settings
+searches:
+  # Response caching
+  response_cache_ttl: 300
+
+  # File limit per search response
+  file_limit: 10000
+
+# Logging
+logging:
+  level: Information
+
+  # Log to file
+  file:
+    enabled: true
+    path: /app/logs
+
+# Room Auto-Join (optional)
+rooms:
+  # Automatically join these rooms
+  # Music rooms are good for finding rare stuff
+  # Uncomment to enable:
+  # - indie
+  # - electronic
+  # - metal
+  # - hiphop
+
+# Transfer Settings
+transfers:
+  # Retry failed downloads
+  retry_failed_downloads: true
+
+  # Remove completed downloads from list
+  remove_completed_downloads: false
+
+# Flags
+flags:
+  # No unshare (requirement for downloading)
+  no_unshare: false

@@ -1,0 +1,309 @@
+<!-- AI Generated landing page. We can sort this out later -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>homelab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e14;
+      --surface: #111820;
+      --border: #1e2a38;
+      --text: #c5cdd8;
+      --text-dim: #5c6a7a;
+      --accent: #3cead4;
+      --accent-glow: rgba(60, 234, 212, 0.08);
+      --red: #f07178;
+      --amber: #ffb454;
+      --blue: #59c2ff;
+      --mono: 'IBM Plex Mono', monospace;
+      --sans: 'IBM Plex Sans', sans-serif;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    /* Subtle grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.25;
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 640px;
+      width: 100%;
+      position: relative;
+    }
+
+    /* Header */
+    .header {
+      margin-bottom: 3rem;
+    }
+
+    .header h1 {
+      font-family: var(--mono);
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+
+    .header h1::before {
+      content: '~/';
+      color: var(--text-dim);
+    }
+
+    .header p {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      font-weight: 300;
+    }
+
+    /* Service list */
+    .services {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .service {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      text-decoration: none;
+      color: var(--text);
+      transition: background 0.15s ease, padding-left 0.15s ease;
+    }
+
+    .service:hover {
+      background: var(--accent-glow);
+      padding-left: 1.5rem;
+    }
+
+    .service-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .service-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .service-name {
+      font-family: var(--mono);
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .service-desc {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      font-weight: 300;
+      margin-top: 0.15rem;
+    }
+
+    .service-port {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      flex-shrink: 0;
+    }
+
+    .service:hover .service-name { color: var(--accent); }
+    .service:hover .service-port { color: var(--text); }
+
+    /* Status dot */
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+      flex-shrink: 0;
+      margin-right: 0.5rem;
+    }
+
+    /* Icon backgrounds */
+    .icon-blue   { background: rgba(89, 194, 255, 0.1); color: var(--blue); }
+    .icon-green  { background: rgba(60, 234, 212, 0.1);  color: var(--accent); }
+    .icon-red    { background: rgba(240, 113, 120, 0.1); color: var(--red); }
+    .icon-amber  { background: rgba(255, 180, 84, 0.1);  color: var(--amber); }
+
+    /* Footer */
+    .footer {
+      margin-top: 2.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      font-family: var(--mono);
+    }
+
+    /* Entrance animation */
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .header    { animation: slideIn 0.4s ease both; }
+    .services  { animation: slideIn 0.4s ease 0.1s both; }
+    .footer    { animation: slideIn 0.4s ease 0.2s both; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="header">
+      <h1>homelab</h1>
+      <p>homelab.humpback-halosaur.ts.net</p>
+    </div>
+
+    <div class="services">
+      <!--
+        Edit the href URLs below.
+        Add or remove service blocks as needed.
+      -->
+
+      <a href="https://homelab.humpback-halosaur.ts.net:8000" class="service">
+        <div class="service-left">
+          <div class="dot"></div>
+          <div class="service-icon icon-blue">&#x2712;</div>
+          <div>
+            <div class="service-name">Open WebUI</div>
+            <div class="service-desc">AI chat interface</div>
+          </div>
+        </div>
+        <span class="service-port">:8000</span>
+      </a>
+
+      <a href="https://homelab.humpback-halosaur.ts.net:8001" class="service">
+        <div class="service-left">
+          <div class="dot"></div>
+          <div class="service-icon icon-blue">&#x2712;</div>
+          <div>
+            <div class="service-name">SoulSeek</div>
+            <div class="service-desc">Music P2P</div>
+          </div>
+        </div>
+        <span class="service-port">:8001</span>
+      </a>
+
+      <a href="https://homelab.humpback-halosaur.ts.net:8002" class="service">
+        <div class="service-left">
+          <div class="dot"></div>
+          <div class="service-icon icon-blue">&#x2712;</div>
+          <div>
+            <div class="service-name">Navidrome</div>
+            <div class="service-desc">Music API / UI</div>
+          </div>
+        </div>
+        <span class="service-port">:8002</span>
+      </a>
+
+      <a href="https://homelab.humpback-halosaur.ts.net:8003" class="service">
+        <div class="service-left">
+          <div class="dot"></div>
+          <div class="service-icon icon-blue">&#x2712;</div>
+          <div>
+            <div class="service-name">SearXNG</div>
+            <div class="service-desc">Privacy focused Search Engine aggregator </div>
+          </div>
+        </div>
+        <span class="service-port">:8003</span>
+      </a>
+
+
+      <a href="https://krischambers.grafana.net" class="service">
+        <div class="service-left">
+          <div class="dot"></div>
+          <div class="service-icon icon-blue">&#x2712;</div>
+          <div>
+            <div class="service-name">Grafana</div>
+            <div class="service-desc">Grafana Cloud Instance</div>
+          </div>
+        </div>
+        <!-- <span class="service-port">:8003</span> -->
+      </a>
+
+    <!--
+      <a href="https://homelab.humpback-halosaur.ts.net:8004" class="service">
+        <div class="service-left">
+          <div class="dot"></div>
+          <div class="service-icon icon-blue">&#x2712;</div>
+          <div>
+            <div class="service-name">Music Torrent Manager</div>
+            <div class="service-desc"> Manages the downloads / finding of music torrents (not great right now)</div>
+          </div>
+        </div>
+        <span class="service-port">:8004</span>
+      </a>
+
+
+      <a href="https://homelab.humpback-halosaur.ts.net:9001" class="service">
+        <div class="service-left">
+          <div class="dot"></div>
+          <div class="service-icon icon-blue">&#x2712;</div>
+          <div>
+            <div class="service-name"> Grafana Alloy </div>
+            <div class="service-desc"> Observability for services</div>
+          </div>
+        </div>
+        <span class="service-port">:9001</span>
+      </a>
+    </div>
+
+
+      <a href="https://homelab.humpback-halosaur.ts.net:9000" class="service">
+        <div class="service-left">
+          <div class="dot"></div>
+          <div class="service-icon icon-blue">&#x2712;</div>
+          <div>
+            <div class="service-name"> Grafana </div>
+            <div class="service-desc"> Observability for services. Redirects to grafana cloud </div>
+          </div>
+        </div>
+        <span class="service-port">:9000</span>
+      </a>
+    </div>
+    -->
+
+  </div>
+
+</body>
+</html>
