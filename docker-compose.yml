@@ -56,8 +56,6 @@ services:
     #  - 4533:4533
     volumes:
       - ~/data/navidrome:/data
-      #- ~/data/media/music:/music:ro
-      # Only show Processed music
       - ~/data/media/music/library:/music/processed
       - ~/data/slskd/config/downloads:/music/unprocessed
     restart: unless-stopped
@@ -155,9 +153,9 @@ services:
       - PGID=1000
     volumes:
       - ~/data/beets/config:/config
-      - ~/data/stack/beets/config.yaml:/config/config.yaml:ro
+      - ./config/beets/config.yaml:/config/config.yaml:ro
       # Incoming downloaded stuff (need to run beets import on this stuff)
-      - ~/data/media/music/soulseek:/downloads
+      - ~/data/slskd/config/downloads:/downloads
       # Processed music
       - ~/data/media/music/library:/music
 
