@@ -1,3 +1,9 @@
+
+networks:
+  protected:
+    name: protected
+    driver: bridge
+
 services:
 
   ## >>  GLUEUN - VPN proxie
@@ -15,13 +21,13 @@ services:
       - SERVER_COUNTRIES=Canada
       - DOT=off
       - DNS_ADDRESS=1.1.1.1
-      - BLOCK_MALICIOUS=off
-      - BLOCK_SURVEILLANCE=off
       - HEALTH_VPN_DURATION_INITIAL=60s
+      - VPN_PORT_FORWARD=off
+      - FIREWALL_VPN_INPUT_PORTS=50300
     env_file:
       - ./config/gluetun/.env
-    ports:
-      - 8085:8085  # qBittorrent WebUI
+    #ports:
+      #- "8000:8000" # Gluetun control server access volumes:
     volumes:
       - ~/data/gluetun:/gluetun
     restart: unless-stopped
@@ -31,18 +37,20 @@ services:
   slskd:
     container_name: slskd
     image: slskd/slskd:latest
-    ports:
+    network_mode: "service:gluetun"
+    #ports:
       #- "5030:5030"    # Web UI
-      - "50300:50300"  # Soulseek P2P port
+      #- "50300:50300"  # Soulseek P2P port
     volumes:
-      - ~/data/slskd/config:/app
-      - ~/data/media/music/soulseek:/downloads
+      - ./config/slskd/slskd.yml:/app/slskd.yml
+      #- ~/data/slskd/config:/app
+      - ~/data/media/music/soulseek:/downloads/completed
       - ~/data/media/music/library:/library
     env_file:
     - ./config/slskd/.env
     restart: unless-stopped
 
-  ## >> Navidrome - Frontent (API and UI)
+  ## >> Navidrome - Frontend (API and UI)
 
   navidrome:
     image: deluan/navidrome:latest
@@ -56,8 +64,9 @@ services:
     #  - 4533:4533
     volumes:
       - ~/data/navidrome:/data
-      - ~/data/media/music/library:/music/processed
-      - ~/data/slskd/config/downloads:/music/unprocessed
+      - ./config/navidrome/navidrome.toml:/data/navidrome.toml
+      - ~/data/media/music/library:/music
+      - ~/data/media/music/soulseek:/music/unprocessed
     restart: unless-stopped
 
   ## >> Open WebUI (ai stuff)
@@ -155,7 +164,7 @@ services:
       - ~/data/beets/config:/config
       - ./config/beets/config.yaml:/config/config.yaml:ro
       # Incoming downloaded stuff (need to run beets import on this stuff)
-      - ~/data/slskd/config/downloads:/downloads
+      - ~/data/media/music/soulseek:/downloads
       # Processed music
       - ~/data/media/music/library:/music
 

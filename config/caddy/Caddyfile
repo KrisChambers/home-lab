@@ -20,7 +20,8 @@ homelab.humpback-halosaur.ts.net:8000 {
 }
 
 homelab.humpback-halosaur.ts.net:8001 {
-    reverse_proxy slskd:5030
+    # NOTE: slskd shares gluetun's network to use the vpn. so slskd is not a name in the network
+    reverse_proxy gluetun:5030
 }
 
 homelab.humpback-halosaur.ts.net:8002 {
