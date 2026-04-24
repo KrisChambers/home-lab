@@ -41,7 +41,7 @@
 #   file:
 #     mode: ~ # not for Windows, chmod syntax, e.g. 644, 777. can't escalate beyond umask
 directories:
-  incomplete: /downloads/incomplete
+  incomplete: /app/incomplete
   downloads: /downloads
 shares:
   directories:

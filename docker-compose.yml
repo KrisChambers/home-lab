@@ -1,4 +1,3 @@
-
 networks:
   protected:
     name: protected
@@ -44,7 +43,7 @@ services:
     volumes:
       - ./config/slskd/slskd.yml:/app/slskd.yml
       #- ~/data/slskd/config:/app
-      - ~/data/media/music/soulseek:/downloads/completed
+      - ~/data/media/music/soulseek:/downloads
       - ~/data/media/music/library:/library
     env_file:
     - ./config/slskd/.env
